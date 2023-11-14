@@ -1,5 +1,5 @@
 {
-    "name": "roguelike",
+    "name": "roguelite",
     "description": "",
     "dependencies": {
         "device": "*"
