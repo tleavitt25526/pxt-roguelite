@@ -2,21 +2,28 @@ enum Controllers {
     TopDown,
     Platformer
 }
-
-//% color="#00bf83"
 namespace Roguelite {
 
     /**
      * Create a new roguelite player
      */
     //% block="create player"
+    //% group="Player"
     //% blockSetVariable=roguePlayer
     export function createRoguePlayer() : RoguePlayer {
         return new RoguePlayer(100, Controllers.TopDown);
     }
-}
 
-//% blockNamespace=Roguelite
+    /**
+     * Create a new coffee item
+     */
+    //% block="create coffee"
+    //% group="Items"
+    //% blockSetVariable=coffee
+    export function createCoffee() : Coffee {
+        return new Coffee(10, 50, 50);
+    }
+}
 class RoguePlayer {
     _moveSpeed: number;
     _controller: Controllers;
@@ -27,24 +34,7 @@ class RoguePlayer {
         this._moveSpeed = moveSpeed;
         this._controller = controller;
 
-        this._playerSprite = sprites.create(img`
-            . . . . . . f f f f . . . . . .
-            . . . . f f f 2 2 f f f . . . .
-            . . . f f f 2 2 2 2 f f f . . .
-            . . f f f e e e e e e f f f . .
-            . . f f e 2 2 2 2 2 2 e e f . .
-            . . f e 2 f f f f f f 2 e f . .
-            . . f f f f e e e e f f f f . .
-            . f f e f b f 4 4 f b f e f f .
-            . f e e 4 1 f d d f 1 4 e e f .
-            . . f e e d d d d d d e e f . .
-            . . . f e e 4 4 4 4 e e f . . .
-            . . e 4 f 2 2 2 2 2 2 f 4 e . .
-            . . 4 d f 2 2 2 2 2 2 f d 4 . .
-            . . 4 4 f 4 4 5 5 4 4 f 4 4 . .
-            . . . . . f f f f f f . . . . .
-            . . . . . f f . . f f . . . . .
-        `, SpriteKind.Player);
+        this._playerSprite = sprites.create(assets.image`Player`, SpriteKind.Player);
         
     }
 
@@ -56,6 +46,7 @@ class RoguePlayer {
     //% this.shadow=variables_get
     //% moveSpeed.shadow=number
     //% moveSpeed.defl=10
+    //% group="Player"
     setMoveSpeed(moveSpeed: number) {
         this._moveSpeed = moveSpeed;
     }
@@ -66,6 +57,7 @@ class RoguePlayer {
     //% block="wake $this"
     //% this.defl=roguePlayer
     //% this.shadow=variables_get
+    //% group="Player"
     wakePlayer() {
         if (this._controller == Controllers.TopDown) {
             controller.moveSprite(this._playerSprite, this._moveSpeed, this._moveSpeed);
@@ -78,11 +70,24 @@ class RoguePlayer {
     //% block="sleep $this"
     //% this.defl=roguePlayer
     //% this.shadow=variables_get
+    //% group="Player"
     sleepPlayer() {
         if (this._controller == Controllers.TopDown) {
             controller.moveSprite(this._playerSprite, 0, 0);
         }
     }
 }
+class Coffee {
+    _modifier: number;
+    _sprite: Sprite;
+    
+    constructor(modifier: number, x: number, y: number) {
+        this._modifier = modifier;
+
+        this._sprite = sprites.create(assets.image`Coffee`, SpriteKind.Player);
+        this._sprite.setPosition(x, y);
+    }
+}
 let roguePlayer = Roguelite.createRoguePlayer()
 roguePlayer.wakePlayer()
+let coffee = Roguelite.createCoffee()
