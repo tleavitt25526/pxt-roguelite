@@ -7,12 +7,22 @@ enum Controllers {
     Platformer
 }
 
+// this has been very annoying to program!
+// store sprite and modifier instead of sprite and class
+class ItemTracker {
+    coffees: [[Sprite], [number]];
 
+    addCoffee(sprite: Sprite, modifier: number) {
+        this.coffees[0].push(sprite);
+        this.coffees[1].push(modifier);
+    }
+}
+let items = new ItemTracker();
 
 namespace Roguelite {
 
     let roguePlayer: RoguePlayer;
-    let ItemsArray: [string, Coffee];
+    // I have no idea if this is the best way to do this
 
     /**
      * Create a new roguelite player
@@ -34,8 +44,8 @@ namespace Roguelite {
     //% blockSetVariable=coffee
     export function createCoffee(x: number, y: number): Coffee {
         let newCoffee = new Coffee(10, x, y);
-
         return newCoffee;
+        // sprite of Coffee item will appear first
     }
 
     // sprite overlap with coffee
@@ -113,9 +123,11 @@ class Coffee {
 
         this._sprite = sprites.create(assets.image`Coffee`, SpriteKind.Coffee);
         this._sprite.setPosition(x, y);
-
+        items.addCoffee(this._sprite, this._modifier);
     }
 
+    getSprite() { return this._sprite; }
+    getModifier() { return this._modifier; }
 
 }
 let roguePlayer = Roguelite.createRoguePlayer()
