@@ -7,22 +7,10 @@ enum Controllers {
     Platformer
 }
 
-// this has been very annoying to program!
-// store sprite and modifier instead of sprite and class
-class ItemTracker {
-    coffees: [[Sprite], [number]];
-
-    addCoffee(sprite: Sprite, modifier: number) {
-        this.coffees[0].push(sprite);
-        this.coffees[1].push(modifier);
-    }
-}
-let items = new ItemTracker();
-
 namespace Roguelite {
 
     let roguePlayer: RoguePlayer;
-    // I have no idea if this is the best way to do this
+    let coffeeModifier = 10;
 
     /**
      * Create a new roguelite player
@@ -39,20 +27,31 @@ namespace Roguelite {
     /**
      * Spawn a new coffee item
      */
-    //% block="create coffee"
-    //% group="Items"
+    //% block="create coffee at $x $y"
+    //% group="Coffee"
     //% blockSetVariable=coffee
-    export function createCoffee(x: number, y: number): Coffee {
-        let newCoffee = new Coffee(10, x, y);
-        return newCoffee;
-        // sprite of Coffee item will appear first
+    export function createCoffee(x: number, y: number)  {
+        let coffee = sprites.create(assets.image`Coffee`, SpriteKind.Coffee);
+        coffee.setPosition(x, y);
+        return coffee;
     }
 
     // sprite overlap with coffee
     sprites.onOverlap(SpriteKind.CustomPlayer, SpriteKind.Coffee, function (sprite: Sprite, otherSprite: Sprite) {
         otherSprite.destroy();
-        //roguePlayer.setMoveSpeed();
+        roguePlayer.addMoveSpeed(coffeeModifier);
     })
+
+    /**
+     * Set Coffee Modifier
+     */
+    //% block="set coffeeModifier to $coffeeModifier"
+    //% coffeeModifier.shadow=number
+    //% coffeeModifier.defl=10
+    //% group="Coffee"
+    export function setCoffeeModifier(modifier: number) {
+        coffeeModifier = modifier;
+    }
 }
 
 //% blockNamespace=Roguelite
@@ -78,15 +77,10 @@ class RoguePlayer {
     //% moveSpeed.shadow=number
     //% moveSpeed.defl=10
     //% group="Player"
-    setMoveSpeed(moveSpeed: number) {
-        this._moveSpeed = moveSpeed;
+    addMoveSpeed(moveSpeed: number) {
+        this._moveSpeed += moveSpeed
+        controller.moveSprite(this._playerSprite, this._moveSpeed, this._moveSpeed);
     }
-
-    //% block="get $this moveSpeed"
-    //% this.defl=roguePlayer
-    //% this.shadow=variables_get
-    //% group="Player"
-    get moveSpeed() { return this._moveSpeed; }
 
     /**
      * Allow given player to move
@@ -114,23 +108,6 @@ class RoguePlayer {
         }
     }
 }
-class Coffee {
-    _modifier: number;
-    _sprite: Sprite;
-
-    constructor(modifier: number, x: number, y: number) {
-        this._modifier = modifier;
-
-        this._sprite = sprites.create(assets.image`Coffee`, SpriteKind.Coffee);
-        this._sprite.setPosition(x, y);
-        items.addCoffee(this._sprite, this._modifier);
-    }
-
-    getSprite() { return this._sprite; }
-    getModifier() { return this._modifier; }
-
-}
 let roguePlayer = Roguelite.createRoguePlayer()
 roguePlayer.wakePlayer()
-let coffee = Roguelite.createCoffee(50, 50);
-
+let coffee = Roguelite.createCoffee(50, 50)
